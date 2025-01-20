@@ -12,7 +12,7 @@ public class Array1 : MonoBehaviour
     //public GameObject objprefabs;
 
 
-    public int [] numArray;
+    public int [] numArray;//초기선언
     //public int [] numArray1 ={1,3,5,7};
 
     public string [] nameArray;
