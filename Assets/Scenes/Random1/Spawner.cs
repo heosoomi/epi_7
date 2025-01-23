@@ -22,6 +22,8 @@ public class Spawner : MonoBehaviour
     [Space(10), HorizontalLine("배치 속성",color:FixedColor.PressedBlue), HideField] public bool _l1;
 
     [SerializeField] LayerMask layerMask;
+
+    [SerializeField] Color Gizmoscolor;
     [SerializeField, Range(1f,200f)] float radius;  //반지름
 
     //int : -21억 ~ 21억 , uint : 0 ~ 42억
@@ -44,7 +46,7 @@ public class Spawner : MonoBehaviour
     // 에디터에서 기즈모를 그릴수 있는 공간 (예약함수)
     void OnDrawGizmos()
     {
-        Gizmos.color = Color.yellow;
+        Gizmos.color = Gizmoscolor;
         Gizmos.DrawWireSphere(transform.position , radius);
     }
 
