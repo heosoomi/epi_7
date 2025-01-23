@@ -7,7 +7,7 @@ public class Vector1 : MonoBehaviour
     //힘, 방향
 
     public float force = 10f; // Scalar 힘
-    //Vector3 forcedirection = new Vector3 (10f,0f,0f); //힘+방향
+    //Vector3 forcedirection = new Vector3 (10f,0f,0f); // 벡터 = 힘+방향
 
     public Vector3 Va ;
     public Vector3 Vb; 
@@ -86,7 +86,8 @@ public class Vector1 : MonoBehaviour
         Gizmos.color = new Color(1f,0f,0f);
         Gizmos.DrawRay(Vector3.zero,AaddB);
         
-        //벡터간 뺄셈 가능
+        //벡터간 뺄셈 가능 
+        // 둘 사이의 기준벡터 거리(방향)
         AminusB = Va - Vb;
         Gizmos.color = new Color(1f,0f,1f);
         Gizmos.DrawRay(Vector3.zero,AaddB);
