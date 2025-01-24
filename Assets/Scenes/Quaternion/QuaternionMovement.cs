@@ -1,15 +1,19 @@
-using Unity.Mathematics;
+
+using Deform;
 using UnityEngine;
 
 public class QuaternionMovement : MonoBehaviour
 {
-    
+    [SerializeField] SquashAndStretchDeformer deform;
     [SerializeField] Camera camMain;
-    [SerializeField] float movespeed = 10f;
+    [SerializeField] float movespeed = 10f;    // 이동속도
+    [SerializeField] float JumpPower = 5f;     // 점프능력
+    [SerializeField] float JumpDuration = 1f;  // 지속시간 
     
 
      float horz;
      float vert;
+     public bool isJumping;
 
     void OnDrawGizmos()
     {
@@ -32,7 +36,7 @@ public class QuaternionMovement : MonoBehaviour
         // camMain.transform.right    카메라의 오른쪽 벡터
         // camMain.transform.up       카메라의 업 벡터
 
-        Gizmos.DrawRay(camMain.transform.position , camMain.transform.forward *10f); 
+        //Gizmos.DrawRay(camMain.transform.position , camMain.transform.forward *10f); 
 
         
     }
@@ -44,11 +48,19 @@ public class QuaternionMovement : MonoBehaviour
         //-1:Left, 0: Center, 1:Right
          horz = Input.GetAxis("Horizontal");
          vert = Input.GetAxis("Vertical");
+         //Jump = Input.GetButton("Jump");
+         //Jump = Input.GetButtonDown("Jump");
         
         //회전 처리
          UpdateRotation();
-
+        //이동 처리
          UpdatePoistion();
+
+         UpdateJump();
+
+        //camMain.transform.forward // 카메라의 전방 벡터
+        //camMain.transform.right // 카메라의 오른쪽 벡터
+        //camMain.transform.up    // 카메라의 업 벡터
         
 
     }
@@ -66,15 +78,29 @@ public class QuaternionMovement : MonoBehaviour
         
         //Vector3 forward = new Vector3(camMain.transform.forward.x,0f,camMain.transform.forward.z) * vert;
 
-        Vector3 forward = camMain.transform.forward * vert;
-        forward.y = 0f;
+         Vector3 forward;
+        if (camMain.transform.eulerAngles.x != 90)
+        {
+            forward = camMain.transform.forward * vert;
+            forward.y=0f;
+        }
+        else 
+        {
+            forward= camMain.transform.up * vert;
+        }
+
+        
+        
+        // Vector3 forward = camMain.transform.forward * vert;
+        // forward.y = 0f;
         Vector3 right = camMain.transform.right * horz;
         right.y = 0f;
+        Vector3 direction = forward + right;
 
 
         //Vector3 forward = Vector3.forward * vert;
         //Vector3 right = Vector3.right * horz;
-        Vector3 direction = forward + right;
+        //Vector3 direction = forward + right;
 
         
         
@@ -83,7 +109,7 @@ public class QuaternionMovement : MonoBehaviour
         // if(forward.sqrMagnitude == 0)
         //     return;
         
-        if(right.sqrMagnitude == 0)
+        if(direction.sqrMagnitude == 0)
             return;
 
         //Quaternion lookrot = Quaternion.LookRotation(forward); //필요없
@@ -96,12 +122,130 @@ public class QuaternionMovement : MonoBehaviour
 
     }
 
-    void UpdatePoistion()
-    {
-        Vector3 moveDir = new Vector3(horz,0f,vert)* movespeed *Time.deltaTime;
+  
 
+    void UpdatePoistion()
+
+    {
+
+        Vector3 forward;
+        if (camMain.transform.eulerAngles.x != 90)
+        {
+            forward = camMain.transform.forward * vert;
+            forward.y=0f;
+        }
+        else 
+        {
+            forward= camMain.transform.up * vert;
+        }
+
+        // Vector3 forward = camMain.transform.forward * vert;
+        // forward.y = 0f;
+        Vector3 right = camMain.transform.right * horz;
+        right.y = 0f;
+        Vector3 direction = (forward + right).normalized;
+
+
+        Vector3 moveDir = direction * movespeed * Time.deltaTime;
+        
         //이동 처리
          transform.position += moveDir;
+
+        //  Debug.DrawRay(transform.position, moveDir*100f ,Color.blue);
+
+        
     }
 
-}
+    
+    // public Vector3 jumpStartPosition;
+    public float jumpstartTime;
+
+    float jumpChargedTime;
+
+    float jumpforceCharged;
+    void UpdateJump()
+    {
+        
+
+        if(  Input.GetButtonDown("Jump"))
+        {
+            jumpChargedTime = Time.time;
+            
+            deform.Factor = -0.15f;
+        }
+
+        if(Input.GetButtonUp("Jump") && isJumping == false)
+        {
+            jumpstartTime = Time.time;
+            jumpforceCharged = jumpstartTime - jumpChargedTime;
+
+            jumpforceCharged = Mathf.Clamp(jumpforceCharged,1f,5f);
+
+            deform.Factor = 0.06f;
+            isJumping = true;
+        }
+        
+
+        
+
+        // if( Jump )
+        // {
+        //     jumpstartTime = Time.time;
+        //     jumpStartPosition = transform.position;
+        // }
+
+        //포물선 방정식
+        //공식1 : y =  (x - x * x)
+        //공식2 : y = x * (1-x)
+
+        //y는 점프 높이, x는 시간 변화량 (percent)
+        
+        //시간 변화 ?  
+        //DeltaTime = Time.deltaTime; //1f 동안 걸린 시간
+        //NowTime = Time.time; // 현재 시간
+
+        // (현재시간 -과거 기준 시간) / 측정할 시간
+
+
+        if(isJumping == true)
+        {
+
+        float percent = (Time.time - jumpstartTime) / JumpDuration; //퍼센트 구하기
+
+        //(percent<1) : 포물선 안에서 작동중( 0 ~ 1 )
+        if(percent < 1)
+        {
+            float jumpheight =  (percent - percent * percent) * (JumpPower * jumpforceCharged) ; //점프 높이 (포물선 방정식)
+            transform.position = new Vector3(transform.position.x,jumpheight,transform.position.z); //
+
+        }
+
+        else
+        {
+            isJumping = false;
+            deform.Factor = 0f;
+        }
+
+        }
+        
+
+
+
+
+         
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+}   
+
+

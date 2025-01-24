@@ -82,27 +82,28 @@ public class Vector1 : MonoBehaviour
         Gizmos.DrawRay(Vector3.zero,Vb);
 
         //벡터간 덧셈가능
-        AaddB = Va + Vb;
+        AaddB = (Va + Vb).normalized;
         Gizmos.color = new Color(1f,0f,0f);
         Gizmos.DrawRay(Vector3.zero,AaddB);
         
         //벡터간 뺄셈 가능 
         // 둘 사이의 기준벡터 거리(방향)
-        AminusB = Va - Vb;
-        Gizmos.color = new Color(1f,0f,1f);
-        Gizmos.DrawRay(Vector3.zero,AaddB);
+        // AminusB = Va - Vb;
+        // Gizmos.color = new Color(1f,0f,1f);
+        // Gizmos.DrawRay(Vector3.zero,AaddB);
         
         //벡터간 곱셈 불가능
         //AmultiB = Va * Vb
 
         //벡터와 float 곱셈 : 가능
-        AmultiForce = Va * force;
+        // AmultiForce = Va * force;
 
-        //벡터의 정규화(nomalize) :-1~1사이 값으로
-        AmultiForceNomalize = AmultiForce.normalized;
+        // //벡터의 정규화(nomalize) :-1~1사이 값으로 -> 방향
+        // //nomalize vector ->단위 벡터 -> -1 ~ 1 방향만 있고 힘 없
+        // AmultiForceNomalize = AmultiForce.normalized;
         
-        Gizmos.color = new Color(0f,0f,0f);
-        Gizmos.DrawRay(Vector3.zero, AmultiForceNomalize);
+        // Gizmos.color = new Color(0f,0f,0f);
+        // Gizmos.DrawRay(Vector3.zero, AmultiForceNomalize);
     
     
     }

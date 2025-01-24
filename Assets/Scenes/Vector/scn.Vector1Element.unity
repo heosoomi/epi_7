@@ -182,9 +182,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   force: 32.3
-  Va: {x: 0.75, y: 1.47, z: 0.39}
-  Vb: {x: 0.18, y: 0.53, z: 0.81}
-  AaddB: {x: 0.93, y: 2, z: 1.2}
+  Va: {x: 1, y: 0, z: 0}
+  Vb: {x: 0, y: 0, z: 1}
+  AaddB: {x: 0.70710677, y: 0, z: 0.70710677}
   AminusB: {x: 0.57, y: 0.94000006, z: -0.42000002}
   AmultiForce: {x: 24.224998, y: 47.481, z: 12.596999}
   AmultiForceNomalize: {x: 0.4422874, y: 0.86688334, z: 0.22998944}
