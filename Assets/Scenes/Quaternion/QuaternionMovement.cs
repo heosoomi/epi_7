@@ -6,9 +6,15 @@ public class QuaternionMovement : MonoBehaviour
 {
     [SerializeField] SquashAndStretchDeformer deform;
     [SerializeField] Camera camMain;
+
+
     [SerializeField] float movespeed = 10f;    // 이동속도
+     //[SerializeField] float movespeedY = 1f;
     [SerializeField] float JumpPower = 5f;     // 점프능력
     [SerializeField] float JumpDuration = 1f;  // 지속시간 
+    [SerializeField] float JumpMax = 4f;
+
+    [SerializeField] AnimationCurve jumpCurve; // 임의의 커브 곡선을 그리는 변수
     
 
      float horz;
@@ -41,13 +47,18 @@ public class QuaternionMovement : MonoBehaviour
         
     }
 
-
+//update -> 1 프레임 당 한번 호출 (일반적 연산용 : 렌더림 )
+//FixedUpdate -> 1 프레임 당 여러번 호출(정교한 연산을 위해서 : 물리연산) 
     void Update()
     {
 
+        //GetAixraw : -1,0,1
+        //GetAix : -1 ~ 1
+
         //-1:Left, 0: Center, 1:Right
-         horz = Input.GetAxis("Horizontal");
-         vert = Input.GetAxis("Vertical");
+         horz = Input.GetAxisRaw("Horizontal");
+         vert = Input.GetAxisRaw("Vertical");
+         
          //Jump = Input.GetButton("Jump");
          //Jump = Input.GetButtonDown("Jump");
         
@@ -64,6 +75,11 @@ public class QuaternionMovement : MonoBehaviour
         
 
     }
+
+    
+   
+
+
 
 
     void UpdateRotation()
@@ -160,6 +176,7 @@ public class QuaternionMovement : MonoBehaviour
     // public Vector3 jumpStartPosition;
     public float jumpstartTime;
 
+    private float jumpStartY;
     float jumpChargedTime;
 
     float jumpforceCharged;
@@ -167,21 +184,26 @@ public class QuaternionMovement : MonoBehaviour
     {
         
 
-        if(  Input.GetButtonDown("Jump"))
+        if(  Input.GetButtonDown("Jump")&& isJumping == false)
         {
             jumpChargedTime = Time.time;
             
-            deform.Factor = -0.15f;
+            if(deform != null)
+                deform.Factor = -0.15f;
         }
 
-        if(Input.GetButtonUp("Jump") && isJumping == false)
+        else if(Input.GetButtonUp("Jump") && isJumping == false)
         {
             jumpstartTime = Time.time;
-            jumpforceCharged = jumpstartTime - jumpChargedTime;
 
-            jumpforceCharged = Mathf.Clamp(jumpforceCharged,1f,5f);
+            jumpforceCharged = (jumpstartTime - jumpChargedTime) * 2f;
+            jumpforceCharged = Mathf.Clamp(jumpforceCharged,1f,JumpMax);
 
-            deform.Factor = 0.06f;
+            jumpStartY = transform.position.y;
+            
+            if(deform != null)
+                deform.Factor = 0.06f;
+            
             isJumping = true;
         }
         
@@ -215,18 +237,26 @@ public class QuaternionMovement : MonoBehaviour
         //(percent<1) : 포물선 안에서 작동중( 0 ~ 1 )
         if(percent < 1)
         {
-            float jumpheight =  (percent - percent * percent) * (JumpPower * jumpforceCharged) ; //점프 높이 (포물선 방정식)
-            transform.position = new Vector3(transform.position.x,jumpheight,transform.position.z); //
+            //float jumpheight =  (percent - percent * percent) * (JumpPower * jumpforceCharged) ; //점프 높이 (포물선 방정식)
+            
+            float jumpheight = jumpCurve.Evaluate(percent) *(JumpPower * jumpforceCharged);
+            transform.position = new Vector3(transform.position.x,jumpStartY + jumpheight,transform.position.z); //
 
         }
 
         else
         {
             isJumping = false;
-            deform.Factor = 0f;
+            
+            if(deform != null)
+                deform.Factor = 0f;
+
+            //transform.position = new Vector3(transform.position.x,jumpStartY,transform.position.z);
         }
 
+        
         }
+      
         
 
 

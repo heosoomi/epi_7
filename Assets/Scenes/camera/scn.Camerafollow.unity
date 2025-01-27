@@ -1026,6 +1026,12 @@ MonoBehaviour:
   movespeed: 10
   JumpPower: 10
   JumpDuration: 1
+  jumpCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   isJumping: 0
   jumpstartTime: 0
 --- !u!136 &5084141813774674995

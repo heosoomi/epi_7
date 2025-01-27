@@ -84,6 +84,8 @@ public class TilemapGenerator1 : MonoBehaviour
 
                 // RED 채널만 활용 : 등고선 표현
                 // 컬러의 r채널을 높이값으로 활용 * heightRange 로 값을 증폭 (더 극명하게 보여주기 위해)
+                if(col.r <= 0)
+                    continue;
                 float y = col.r * heightRange;
 
                 Vector3 pos = new Vector3(x * gapRange, y, z * gapRange);
