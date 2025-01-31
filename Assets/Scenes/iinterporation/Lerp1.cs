@@ -1,5 +1,10 @@
 using UnityEngine;
 
+
+//lerp : Linear Interpolation(선형 보간)
+//보간 ? 두 지점 사이의 값
+
+//Slerp: 
 public class Lerp1 : MonoBehaviour
 {
     
@@ -20,6 +25,8 @@ public class Lerp1 : MonoBehaviour
     void MoveSlerp()
     {
         transform.position = Vector3.Slerp(A.position,B.position,t);
+
+        
     }
 
 
